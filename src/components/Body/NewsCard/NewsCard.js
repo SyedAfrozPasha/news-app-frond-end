@@ -5,7 +5,9 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import ButtonBase from "@material-ui/core/ButtonBase";
 import Link from "@material-ui/core/Link";
+import ArticleFallbackImg from "../../../assets/images/article_fallback_img.png";
 
+// styled-components
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -15,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     margin: "auto",
     maxWidth: "70%",
-    backgroundColor: "#ddd"
+    backgroundColor: "#ddd",
   },
   image: {
     width: "200px",
@@ -33,11 +35,11 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   headline: {
-    fontWeight: 700
+    fontWeight: 700,
   },
 }));
 
-export default function NewsCard({ data }) {
+function NewsCard({ data }) {
   const classes = useStyles();
 
   return (
@@ -53,11 +55,23 @@ export default function NewsCard({ data }) {
           <Grid container spacing={2}>
             <Grid item>
               <ButtonBase className={classes.image}>
-                <img
-                  className={classes.img}
-                  alt={data.title}
-                  src={data.urlToImage}
-                />
+                {data.urlToImage ? (
+                  <img
+                    className={classes.img}
+                    alt={data.title}
+                    src={data.urlToImage}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = ArticleFallbackImg;
+                    }}
+                  />
+                ) : (
+                  <img
+                    className={classes.img}
+                    alt={data.title}
+                    src={ArticleFallbackImg}
+                  />
+                )}
               </ButtonBase>
             </Grid>
             <Grid item xs={12} sm container>
@@ -70,15 +84,14 @@ export default function NewsCard({ data }) {
                   >
                     {data.title}
                   </Typography>
-                  <Typography variant="body2" gutterBottom>
-                    {data.description}
-                  </Typography>
+
+                  {data.description && (
+                    <Typography variant="body2">{data.description}</Typography>
+                  )}
                 </Grid>
                 {data.author && (
                   <Grid item>
-                    <Typography variant="caption">
-                      By {data.author}
-                    </Typography>
+                    <Typography variant="caption">By {data.author}</Typography>
                   </Grid>
                 )}
                 {data.publishedAt && (
@@ -96,3 +109,5 @@ export default function NewsCard({ data }) {
     </div>
   );
 }
+
+export default NewsCard;

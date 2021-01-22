@@ -1,21 +1,24 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import "./Header.scss";
 
-const useStyles = makeStyles((theme) => ({
+// styled-components
+const useStyles = makeStyles(() => ({
+  header: {
+    margin: "0 auto",
+    display: "block"
+  },
   appName: {
     color: "#969191",
-    fontFamily: "fantasy"
-  }
+    fontFamily: "fantasy",
+  },
 }));
 
 function Header() {
-
   const classes = useStyles();
 
   return (
-    <div className="header">
+    <div className={classes.header}>
       <Typography variant="h4" align="center" className={classes.appName}>
         The News World
       </Typography>

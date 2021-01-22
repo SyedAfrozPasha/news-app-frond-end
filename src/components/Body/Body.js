@@ -1,38 +1,79 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { makeStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
-import "./Body.scss";
+import Paper from "@material-ui/core/Paper";
+import LinearProgress from "@material-ui/core/LinearProgress";
 
 import NewsCard from "./NewsCard/NewsCard";
 import SearchBar from "./SearchBar/SearchBar";
 import FilterPanel from "./FilterPanel/FilterPanel";
 
-function Body() {
-  const [data, setData] = useState([]);
+// styled-components
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+    marginBottom: "10px",
+  },
+  body: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    marginTop: "3em",
+  },
+  paper: {
+    padding: theme.spacing(2),
+    margin: "auto",
+    maxWidth: "70%",
+    backgroundColor: "#989898",
+  },
+  progress: {
+    margin: "auto",
+    maxWidth: "72%",
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: "100%",
+    maxWidth: "100%",
+  },
+  btmMargin: {
+    marginTop: "3em",
+  },
+}));
 
+function Body() {
+  const classes = useStyles();
+
+  const [data, setData] = useState([]);
   const [query, setQuery] = useState("");
-  const [country, setCountry] = useState("us");
+  const [country, setCountry] = useState("");
   const [category, setCategory] = useState("");
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [isFilterLoading, setIsFilterLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    getTopHeadlines();
+    getArticles();
   }, [query, country, category]);
 
-  const getTopHeadlines = async () => {
-    setIsFilterLoading(true);
+  // Get Articles (API)
+  const getArticles = async () => {
+    setIsLoading(true);
 
-    let url = `http://localhost:8080/top-headlines?&country=${country}`;
+    let url = `http://localhost:8080/top-headlines?`;
 
     if (query) {
-      setIsSearchLoading(true);
-      setIsFilterLoading(false);
       url += `&q=${query}`;
+    }
+
+    if (country) {
+      url += `&country=${country}`;
     }
 
     if (category) {
       url += `&category=${category}`;
+    }
+
+    if (!query && !country && !category) {
+      url += `&country=us`;
     }
 
     const result = await axios.get(url);
@@ -45,15 +86,13 @@ function Body() {
       result.data.articles.length > 0
     ) {
       setData(result.data.articles);
-      setIsSearchLoading(false);
-      setIsFilterLoading(false);
+      setIsLoading(false);
     } else {
-      setIsSearchLoading(false);
-      setIsFilterLoading(false);
+      setIsLoading(false);
     }
-    console.log("RESULTS:", result);
   };
 
+  // callback action (Anti-Pattern)
   const searchCallback = (data) => {
     switch (data.type) {
       case "search":
@@ -65,21 +104,21 @@ function Body() {
       case "category":
         setCategory(data.payload);
         break;
+      default:
+        break;
     }
   };
 
   return (
-    <div className="body">
+    <div className={classes.body}>
       <Box component="div">
-        <SearchBar
-          searchCallback={(val) => searchCallback(val)}
-          isSearchLoading={isSearchLoading}
-        />
-
-        <FilterPanel
-          searchCallback={(val) => searchCallback(val)}
-          isFilterLoading={isFilterLoading}
-        />
+        <div className={classes.root}>
+          <Paper className={classes.paper}>
+            <SearchBar searchCallback={(val) => searchCallback(val)} />
+            <FilterPanel searchCallback={(val) => searchCallback(val)} />
+          </Paper>
+          {isLoading && <LinearProgress className={classes.progress} />}
+        </div>
 
         {data &&
           data.length > 0 &&
@@ -87,7 +126,7 @@ function Body() {
             return <NewsCard key={i} data={article} />;
           })}
       </Box>
-      <div className="btm-margin"></div>
+      <div className={classes.btmMargin}></div>
     </div>
   );
 }

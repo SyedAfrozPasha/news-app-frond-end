@@ -1,6 +1,6 @@
 import React from "react";
 import Typography from "@material-ui/core/Typography";
-import Link from '@material-ui/core/Link';
+import Link from "@material-ui/core/Link";
 
 function Copyright() {
   return (
@@ -8,7 +8,8 @@ function Copyright() {
       {"Copyright © "}
       <Link color="inherit" href="https://github.com/SyedAfrozPasha">
         Syed Afroz Pasha
-      </Link>{" - "}
+      </Link>
+      {" - "}
       {new Date().getFullYear()}
       {"."}
     </Typography>
