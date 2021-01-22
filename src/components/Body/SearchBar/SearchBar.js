@@ -6,29 +6,38 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 // import Typography from "@material-ui/core/Typography";
 import "./SearchBar.scss";
 
-function SearchBox({ searchCallback }) {
+function SearchBox({ searchCallback, isSearchLoading }) {
   const [searchValue, setSearchValue] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(isSearchLoading || false);
   const [data, setData] = useState([]);
 
-  const searchArticles = async (searchQuery) => {
+  const searchArticles = (searchQuery) => {
     if (searchQuery) {
-        setIsLoading(true);
-      let url = `http://localhost:8080/getAllNews?q=${searchQuery}`;
-      const result = await axios.get(url);
+      // setIsLoading(true);
 
-      if (
-        result &&
-        result.data &&
-        result.data.status === "ok" &&
-        result.data.articles &&
-        result.data.articles.length > 0
-      ) {
-        setData(result.data.articles);
-        setIsLoading(false);
-        searchCallback(result.data.articles);
-      }
-      console.log("RESULTS:", result);
+      searchCallback({
+        type: "search",
+        payload: searchQuery,
+      });
+
+      // let url = `http://localhost:8080/getAllNews?q=${searchQuery}`;
+      // const result = await axios.get(url);
+
+      // if (
+      //   result &&
+      //   result.data &&
+      //   result.data.status === "ok" &&
+      //   result.data.articles &&
+      //   result.data.articles.length > 0
+      // ) {
+      //   setData(result.data.articles);
+      //   setIsLoading(false);
+      // searchCallback({
+      //   type: "articles",
+      //   payload: result.data.articles,
+      // });
+      // }
+      // console.log("RESULTS:", result);
     }
   };
 
@@ -40,7 +49,7 @@ function SearchBox({ searchCallback }) {
         placeholder="Search for news articles..."
         autoFocus
       />
-      {isLoading && <LinearProgress />}
+      {isSearchLoading && <LinearProgress />}
     </div>
   );
 }
